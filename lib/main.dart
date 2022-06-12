@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-
-
-
 import '4_Gewinnt/4_Gewinnt.dart';
 import '4_Gewinnt/screens/game_screen/game_screen.dart';
 import 'bild_hochladen.dart';
 import 'Malen/drawing_page.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-void main() async{
+Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
+  await Firebase.initializeApp();
+  /*await SystemChrome.setPreferredOrientations([
   DeviceOrientation.portraitUp,
   DeviceOrientation.portraitDown,
-  ]);
+  ]);*/
   runApp(const MyApp());
 }
 
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Lighthouse',
-      initialRoute: '/main',
+      initialRoute: '/Homepage',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
 
@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.all(8.0),
                 child:Column(
                   children: [
-                    Text("Lighthouse"),
+                    Text("Lighthouse", style: TextStyle(color: Colors.white)),
                     Expanded(
                       child: ListView(
                         children: [
@@ -90,11 +90,11 @@ class _HomePageState extends State<HomePage> {
                             },
                             leading: Icon(
                               Icons.edit,
-                              color: Colors.red,
+                              color: Colors.white,
                             ),
                             title: Text(
                               "Malen",
-                              style: TextStyle(color: Colors.red),
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
                           ListTile(
@@ -103,11 +103,11 @@ class _HomePageState extends State<HomePage> {
                             },
                             leading: Icon(
                               Icons.upload,
-                              color: Colors.red,
+                              color: Colors.white,
                             ),
                             title: Text(
                               "BildHochladen",
-                              style: TextStyle(color: Colors.red),
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
                           ListTile(
@@ -116,11 +116,11 @@ class _HomePageState extends State<HomePage> {
                             },
                             leading: Icon(
                               Icons.games,
-                              color: Colors.red,
+                              color: Colors.white,
                             ),
                             title: Text(
                               "VierGewinnt",
-                              style: TextStyle(color: Colors.red),
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
                         ],

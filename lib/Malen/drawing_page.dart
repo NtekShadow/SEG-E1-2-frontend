@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -8,8 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-class Malen extends StatefulWidget {
+/*class Malen extends StatefulWidget {
   @override
   _MalenState createState() => _MalenState();
 }
@@ -274,4 +277,206 @@ class _MalenState extends State<Malen> {
       line = null;
     });
   }
+}*/
+
+
+
+class Malen extends StatefulWidget {
+  @override
+  MalenState createState() {
+    return new MalenState();
+
+  }
+}
+
+class MalenState extends State<Malen> {
+
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference myRef;
+  Color selectedColor = Colors.black;
+
+  Set<int> selectedIndexes = Set<int>();
+  Set<int> speicher = Set<int>();
+  Set<int> tempSpeicher = Set<int>();
+  final key = GlobalKey();
+  final Set<_Fenster> _trackTaped = Set<_Fenster>();
+
+  _detectTapedItem(PointerEvent event) {
+    final RenderBox box = key.currentContext.findAncestorRenderObjectOfType<RenderBox>();
+    final result = BoxHitTestResult();
+    Offset local = box.globalToLocal(event.position);
+    if (box.hitTest(result, position: local)) {
+      for (final hit in result.path) {
+        /// temporary variable so that the [is] allows access of [index]
+        final target = hit.target;
+        if (target is _Fenster && !_trackTaped.contains(target)) {
+          _trackTaped.add(target);
+          _selectIndex(target.index);
+          print(target.index);
+        }
+      }
+    }
+  }
+
+  _selectIndex(int index) {
+    setState(() {
+      selectedIndexes.add(index);
+      print(index);
+      speicher.addAll(selectedIndexes);
+    });
+  }
+
+  _getDB() {
+      myRef = database.ref("LED");
+  }
+
+  _writeDB() {
+    tempSpeicher = speicher;
+    for(int i = 0; i < tempSpeicher.length; i++) {
+      myRef.child(tempSpeicher.last.toString()).child("R").set(selectedColor.red);
+      myRef.child(tempSpeicher.last.toString()).child("G").set(selectedColor.green);
+      myRef.child(tempSpeicher.last.toString()).child("B").set(selectedColor.blue);
+      tempSpeicher.remove(tempSpeicher.last.toString());
+    }
+  }
+
+  _clearIndex() {
+    speicher.clear();
+    for (int i = 0; i < 256; i++) {
+      myRef.child(i.toString()).child("R").set("0");
+      myRef.child(i.toString()).child("G").set("0");
+      myRef.child(i.toString()).child("B").set("0");
+    }
+  }
+
+  @protected
+  @mustCallSuper
+  void initState() {
+      _getDB();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          buildColorToolbar(),
+        ],
+      ),
+      body: Listener(
+        onPointerDown: _detectTapedItem,
+        onPointerMove: _detectTapedItem,
+        child: GridView.builder(
+          key: key,
+          itemCount: 256,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 8,
+            mainAxisExtent: 13,
+            childAspectRatio: 1.0,
+            crossAxisSpacing: 5.0,
+            mainAxisSpacing: 5.0,
+          ),
+          itemBuilder: (context, index) {
+            return Fenster(
+              index: index,
+              child:  Container(
+
+                color: speicher.contains(index) ? selectedColor : Colors.white,
+              ),
+
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget buildColorButton(Color color) {
+    return Padding(
+      padding: const EdgeInsets.all(0.0),
+      child: FloatingActionButton(
+        mini: true,
+        backgroundColor: color,
+        child: Container(),
+        onPressed: () {
+          setState(() {
+            selectedIndexes.clear();
+            print(selectedIndexes);
+            selectedColor = color;
+          });
+        },
+      ),
+    );
+  }
+  Widget buildSaveButton() {
+    return Padding(
+      padding: const EdgeInsets.all(0.0),
+      child: FloatingActionButton(
+        mini: true,
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.save),
+        onPressed: () {
+          _writeDB();
+        },
+      ),
+    );
+  }
+  Widget buildClearButton() {
+    return Padding(
+      padding: const EdgeInsets.all(0.0),
+      child: FloatingActionButton(
+        mini: true,
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.clear),
+        onPressed: () {
+          setState(() {
+            _clearIndex();
+          });
+        },
+      ),
+    );
+  }
+  Widget buildColorToolbar() {
+    return Positioned(
+      top: 40.0,
+      right: 10.0,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          buildColorButton(Colors.deepPurple),
+          buildColorButton(Colors.green),
+          buildColorButton(Colors.yellow),
+          buildColorButton(Colors.red),
+          buildColorButton(Colors.white),
+          buildColorButton(Colors.black),
+          buildClearButton(),
+          buildSaveButton(),
+        ],
+      ),
+    );
+  }
+
+}
+
+class Fenster extends SingleChildRenderObjectWidget {
+  final int index;
+
+  Fenster({  Widget child,    this.index,  Key key}) : super(child: child, key: key);
+
+  @override
+  _Fenster createRenderObject(BuildContext context) {
+    return _Fenster(index);
+  }
+
+  @override
+  void updateRenderObject(BuildContext context, _Fenster renderObject) {
+    renderObject..index = index;
+  }
+}
+
+class _Fenster extends RenderProxyBox {
+  int index;
+  _Fenster(this.index);
 }
