@@ -1,11 +1,17 @@
+import 'dart:ui';
+
 import 'package:Lighthouse/4_Gewinnt/screens/game_screen/widgets/cell.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class GameController extends GetxController {
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference myRef;
   RxList<List<int>> _board = RxList<List<int>>();
   List<List<int>> get board => _board.value;
   set board(List<List<int>> value) => _board.value = value;
-
+ Color select = Colors.black;
   RxBool _turnYellow = true.obs;
   bool get turnYellow => _turnYellow.value;
 
@@ -27,9 +33,153 @@ class GameController extends GetxController {
   void onInit() {
     super.onInit();
     _buildBoard();
+    koordinaten_Farben_uebertragung();
+  }
+  koordinaten_Farben_uebertragung() {
+    myRef = database.ref("LED");
+  }
+   //* wandelt x und y zu Index
+  column_row_to_index(int x,int y){
+    //erste Reihe
+    if(x==0 && y==0){
+      return 7;
+    }
+    if(x==0 && y==1){
+      return 6;
+    }
+    if(x==0 && y==2){
+      return 5;
+    }
+    if(x==0 && y==3){
+      return 4;
+    }
+    if(x==0 && y==4){
+      return 3;
+    }
+    if(x==0 && y==5){
+      return 2;
+    }
+    //zweite Reihe
+    if(x==1 && y==0){
+      return 15;
+    }
+    if(x==1 && y==1){
+      return 14;
+    }
+    if(x==1 && y==2){
+      return 13;
+    }
+    if(x==1 && y==3){
+      return 12;
+    }
+    if(x==1 && y==4){
+      return 11;
+    }
+    if(x==1 && y==5){
+      return 10;
+    }
+
+    //dritte Reihe
+    if(x==2 && y==0){
+      return 23;
+    }
+    if(x==2 && y==1){
+      return 22;
+    }
+    if(x==2 && y==2){
+      return 21;
+    }
+    if(x==2 && y==3){
+      return 20;
+    }
+    if(x==2 && y==4){
+      return 19;
+    }
+    if(x==2 && y==5){
+      return 18;
+    }
+
+    //vierte Reihe
+    if(x==3 && y==0){
+      return 31;
+    }
+    if(x==3 && y==1){
+      return 30;
+    }
+    if(x==3 && y==2){
+      return 29;
+    }
+    if(x==3 && y==3){
+      return 28;
+    }
+    if(x==3 && y==4){
+      return 27;
+    }
+    if(x==3 && y==5){
+      return 26;
+    }
+    //fünfte Reihe
+    if(x==4 && y==0){
+      return 39;
+    }
+    if(x==4 && y==1){
+      return 38;
+    }
+    if(x==4 && y==2){
+      return 37;
+    }
+    if(x==4 && y==3){
+      return 36;
+    }
+    if(x==4 && y==4){
+      return 35;
+    }
+    if(x==4 && y==5){
+      return 34;
+    }
+    //sechste Reihe
+    if(x==5 && y==0){
+      return 47;
+    }
+    if(x==5 && y==1){
+      return 46;
+    }
+    if(x==5 && y==2){
+      return 45;
+    }
+    if(x==5 && y==3){
+      return 44;
+    }
+    if(x==5 && y==4){
+      return 43;
+    }
+    if(x==5 && y==5){
+      return 42;
+    }
+    //siebte Reihe
+    if(x==6 && y==0){
+      return 55;
+    }
+    if(x==6 && y==1){
+      return 54;
+    }
+    if(x==6 && y==2){
+      return 53;
+    }
+    if(x==6 && y==3){
+      return 52;
+    }
+    if(x==6 && y==4){
+      return 51;
+    }
+    if(x==6 && y==5){
+      return 50;
+    }
+
   }
 
-  void playColumn(int columnNumber) {
+  void game_Loop(int columnNumber) {
+    int index;
     //* Save player number depending on player's turn
     final int playerNumber = turnYellow ? 1 : 2;
     //* Select column
@@ -41,29 +191,30 @@ class GameController extends GetxController {
       final int rowIndex = selectedColumn.indexWhere((cell) => cell == 0);
       //* Replace zero with playerNumber
       selectedColumn[rowIndex] = playerNumber;
+
+      //* Farbe vom Spieler Übertragung
+      if(playerNumber == 2){
+        select= Color(0xFF0000);
+      }else if(playerNumber==1){
+        select= Color(0x00FF00);
+      }
+      print("playercolor(R):${select.red}");
+      print("playercolor(G):${select.green}");
+      print("playercolor(B):${select.blue}");
+      print(playerNumber);
+      print("row(y):$rowIndex");
+      print("column(x):${board.indexOf(selectedColumn)}");
+      print("index:${column_row_to_index(board.indexOf(selectedColumn), rowIndex)}");
+      //* Index des Fenster Übertragung
+      index =column_row_to_index(board.indexOf(selectedColumn), rowIndex);
+      //* RGB Werte Übertragung
+      myRef.child(index.toString()).child("R").set(select.red);
+      myRef.child(index.toString()).child("G").set(select.green);
+      myRef.child(index.toString()).child("B").set(select.blue);
       //* Switch turns
       _turnYellow.value = !_turnYellow.value;
       //* Update UI
       update();
-
-      // int resultHorizontal = checkHorizontals();
-      // int resultVertical = checkVerticals();
-
-      // if (resultHorizontal == 1 || resultVertical == 1) {
-      //   Get.defaultDialog(
-      //     title: 'YELLOW WON',
-      //     content: Cell(
-      //       currentCellMode: cellMode.YELLOW,
-      //     ),
-      //   ).then((value) => _buildBoard());
-      // } else if (resultHorizontal == 2 || resultVertical == 2) {
-      //   Get.defaultDialog(
-      //     title: 'RED WON',
-      //     content: Cell(
-      //       currentCellMode: cellMode.RED,
-      //     ),
-      //   ).then((value) => _buildBoard());
-      // }
 
       winner = checkVictory();
 
@@ -73,14 +224,14 @@ class GameController extends GetxController {
 
       if (boardIsFull()) {
         Get.defaultDialog(
-            title: 'Draw! Nobody won.',
+            title: 'Niemand hat gewonnen',
             content: Cell(
               currentCellMode: cellMode.EMPTY,
             )).then((value) => resetGame());
       }
     } else {
-      Get.snackbar('Not available',
-          'This column is already filled up. Choose another column.',
+      Get.snackbar('Nicht möglich',
+          'Diese Spalte ist schon voll',
           snackPosition: SnackPosition.BOTTOM);
     }
   }
@@ -89,9 +240,9 @@ class GameController extends GetxController {
 
   void declareWinner() {
     Get.defaultDialog(
-        title: winner == 1 ? 'YELLOW WON' : 'RED WON',
+        title: winner == 1 ? 'Grün hat gewonnen' : 'Rot hat gewonnen',
         content: Cell(
-          currentCellMode: winner == 1 ? cellMode.YELLOW : cellMode.RED,
+          currentCellMode: winner == 1 ? cellMode.GREEN : cellMode.RED,
         )).then((value) => resetGame());
   }
 

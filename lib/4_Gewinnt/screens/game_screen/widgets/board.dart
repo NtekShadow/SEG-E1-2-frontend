@@ -20,18 +20,20 @@ class Board extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
+          width:width,
+
           margin: EdgeInsets.all(10),
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-            ),
-            color: Colors.blue,
+
+            color: Color.fromRGBO(128, 71, 28,1),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.5),
@@ -42,6 +44,7 @@ class Board extends StatelessWidget {
             ],
           ),
           child: Column(
+
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(

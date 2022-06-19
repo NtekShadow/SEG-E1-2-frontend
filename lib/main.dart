@@ -1,41 +1,31 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import '4_Gewinnt/4_Gewinnt.dart';
-import '4_Gewinnt/screens/game_screen/game_screen.dart';
-import 'bild_hochladen.dart';
-import 'Malen/drawing_page.dart';
-import 'package:flutter/services.dart';
+import 'Bilder_Auswahl/Bilder_Auswahl.dart';
+import 'Malen/malen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  /*await SystemChrome.setPreferredOrientations([
-  DeviceOrientation.portraitUp,
-  DeviceOrientation.portraitDown,
-  ]);*/
-  runApp(const MyApp());
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key key}) : super(key: key);
 
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Lighthouse',
-      initialRoute: '/Homepage',
+      initialRoute: '/',
       routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
-
-        // When navigating to the "/second" route, build the SecondScreen widget.
         '/VierGewinnt': (context) =>  VierGewinnt(),
         '/Malen': (context) => Malen(),
-        '/BildHochladen': (context) => BildHochladen(),
-        '/Homepage':(context)=>HomePage(),
+        '/Bilder_Auswahl': (context) => Bilder_Auswahl(),
       },
       home:  HomePage(),
     );
@@ -99,14 +89,14 @@ class _HomePageState extends State<HomePage> {
                           ),
                           ListTile(
                             onTap: () {
-                              Navigator.pushNamed(context, '/BildHochladen');
+                              Navigator.pushNamed(context, '/Bilder_Auswahl');
                             },
                             leading: Icon(
                               Icons.upload,
                               color: Colors.white,
                             ),
                             title: Text(
-                              "BildHochladen",
+                              "Bilder Auswahl",
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
@@ -143,6 +133,7 @@ class _HomePageState extends State<HomePage> {
                     ..rotateY((pi / 6) * val),
                   child: Scaffold(
                     appBar: AppBar(
+                      automaticallyImplyLeading: false,
                       title: Text("Lighthouse Test"),
                     ),
                     body: Center(
@@ -162,11 +153,6 @@ class _HomePageState extends State<HomePage> {
               });
             }
           }
-              /*onTap:(){
-              setState(() {
-                value == 0 ? value =1 : value =0;
-              });
-            },*/
               )
         ],
       ),

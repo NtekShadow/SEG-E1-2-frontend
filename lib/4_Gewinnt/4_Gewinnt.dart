@@ -13,7 +13,15 @@ class VierGewinnt extends StatelessWidget {
     return GetMaterialApp(
       initialBinding: MainBindings(),
       debugShowCheckedModeBanner: false,
-      home: GameScreen(),
+
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+
+      getPages: [
+        GetPage(name: '/', page: () => GameScreen()),
+      ],
     );
   }
 }

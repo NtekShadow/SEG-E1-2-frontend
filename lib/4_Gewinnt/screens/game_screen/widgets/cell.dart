@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'coin.dart';
+import 'window.dart';
 
 enum cellMode {
   EMPTY,
-  YELLOW,
+  GREEN,
   RED,
 }
 
@@ -16,20 +16,20 @@ class Cell extends StatelessWidget {
     @required this.currentCellMode,
   }) : super(key: key);
 
-  Coin _buildCoin() {
+  Window _buildWindow() {
     switch (this.currentCellMode) {
-      case cellMode.YELLOW:
-        return Coin(
-          coinColor: Colors.yellow,
+      case cellMode.GREEN:
+        return Window(
+          windowColor: Colors.green[600],
         );
         break;
       case cellMode.RED:
-        return Coin(
-          coinColor: Colors.red,
+        return Window(
+          windowColor: Colors.red[600],
         );
       default:
-        return Coin(
-          coinColor: Colors.white,
+        return Window(
+          windowColor: Colors.black,
         );
     }
   }
@@ -40,13 +40,13 @@ class Cell extends StatelessWidget {
       children: [
         Container(
           height: 50,
-          width: 50,
-          color: Colors.blue,
+          width: 45,
+          color: Colors.white,
         ),
         Positioned.fill(
             child: Align(
           alignment: Alignment.center,
-          child: _buildCoin(),
+          child: _buildWindow(),
         ))
       ],
     );

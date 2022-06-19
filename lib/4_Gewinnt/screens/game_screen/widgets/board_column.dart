@@ -19,7 +19,7 @@ class BoardColumn extends StatelessWidget {
     return columnOfPlayerChips.reversed
         .map((number) => number == 1
             ? Cell(
-                currentCellMode: cellMode.YELLOW,
+                currentCellMode: cellMode.GREEN,
               )
             : number == 2
                 ? Cell(
@@ -35,7 +35,7 @@ class BoardColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        gameController.playColumn(columnNumber);
+        gameController.game_Loop(columnNumber);
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,

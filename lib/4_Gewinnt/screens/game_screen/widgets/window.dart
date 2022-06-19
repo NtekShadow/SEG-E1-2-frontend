@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class Coin extends StatelessWidget {
-  final Color coinColor;
+class Window extends StatelessWidget {
+  final Color windowColor;
 
-  const Coin({
+  const Window({
     Key key,
-    @required this.coinColor,
+    @required this.windowColor,
   }) : super(key: key);
 
   @override
@@ -14,8 +14,7 @@ class Coin extends StatelessWidget {
       height: 35,
       width: 35,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(32),
-        color: coinColor,
+        color: windowColor,
       ),
     );
   }
