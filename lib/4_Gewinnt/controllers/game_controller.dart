@@ -28,6 +28,14 @@ class GameController extends GetxController {
     ];
     update();
   }
+  _clearIndex() {
+    myRef = database.ref("LED");
+    for (int i = 0; i < 288; i++) {
+      myRef.child(i.toString()).child("R").set("0");
+      myRef.child(i.toString()).child("G").set("0");
+      myRef.child(i.toString()).child("B").set("0");
+    }
+  }
 
   @override
   void onInit() {
@@ -246,7 +254,10 @@ class GameController extends GetxController {
         )).then((value) => resetGame());
   }
 
-  void resetGame() => _buildBoard();
+  void resetGame(){
+    _buildBoard();
+    _clearIndex();
+  }
 
   bool boardIsFull() {
     for (final col in board) {
