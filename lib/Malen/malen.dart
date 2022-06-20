@@ -174,9 +174,9 @@ class _MalenState extends State<Malen> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           buildClearButton(),
-          buildColorButton(Colors.red[600]),
-          buildColorButton(Colors.blue[600]),
-          buildColorButton(Colors.green[600]),
+          buildColorButton(Colors.redAccent[700]),
+          buildColorButton(Colors.blue[900]),
+          buildColorButton(Colors.green[900]),
           buildColorButton(Colors.yellow),
           buildColorButton(Colors.black),
           buildColorButton(Colors.white),
